@@ -8,7 +8,7 @@ namespace APIProdutos.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class ProdutosController : ControllerBase
     {
         private ProdutoService _service;

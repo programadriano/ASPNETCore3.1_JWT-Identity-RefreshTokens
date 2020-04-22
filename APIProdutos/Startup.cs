@@ -10,6 +10,7 @@ using APIProdutos.Data;
 using APIProdutos.Models;
 using APIProdutos.Security;
 using APIProdutos.Business;
+using GraphiQl;
 
 namespace APIProdutos
 {
@@ -31,7 +32,7 @@ namespace APIProdutos
                     Configuration.GetConnectionString("ConexaoRedis");
                 options.InstanceName = "APIProdutos";
             });
-            
+
             // Configurando o acesso a dados de produtos
             services.AddDbContext<CatalogoDbContext>(options =>
                 options.UseInMemoryDatabase("InMemoryDatabase"));
@@ -67,6 +68,7 @@ namespace APIProdutos
             services.AddJwtSecurity(
                 signingConfigurations, tokenConfigurations);
 
+
             services.AddCors();
             services.AddControllers();
         }
@@ -74,24 +76,41 @@ namespace APIProdutos
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ProdutoService produtoService)
         {
+
+            app.UseGraphiQl();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
+
+            produtoService.Incluir(
+           new Produto { CodigoBarras = "11111111111", Nome = "Produto01", Preco = 579 }
+           );
+
+            produtoService.Incluir(
+              new Produto { CodigoBarras = "2222222222", Nome = "Produto02", Preco = 579 }
+              );
+
+
+
+
             // Criação de estruturas, usuários e permissões
             // na base do ASP.NET Identity Core (caso ainda não
             // existam)
-            new IdentityInitializer(context, userManager, roleManager)
-                .Initialize();
+            //new IdentityInitializer(context, userManager, roleManager)
+            //    .Initialize();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //  app.UseAuthorization();
+
+
 
             app.UseEndpoints(endpoints =>
             {
